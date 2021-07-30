@@ -25,6 +25,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 cmake_minimum_required (VERSION 3.18)
+include(GNUInstallDirs)
 
 project(tritonpytorchbackend LANGUAGES C CXX)
 
@@ -278,6 +279,8 @@ FOREACH(p ${TRITON_PYTORCH_LIB_PATHS})
   set(TRITON_PYTORCH_LDFLAGS ${TRITON_PYTORCH_LDFLAGS} "-L${p}")
 ENDFOREACH(p)
 
+message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
+link_directories(${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(
   triton-pytorch-backend
   PRIVATE
@@ -286,8 +289,8 @@ target_link_libraries(
     triton-core-serverstub # from repo-core
     triton-backend-utils   # from repo-backend
     ${TRITON_PYTORCH_LDFLAGS}
-    -ltorch
-    -ltorchvision
+    ${CMAKE_CURRENT_BINARY_DIR}/libtorch.so
+    ${CMAKE_CURRENT_BINARY_DIR}/libtorchvision.so
 )
 
 if(${TRITON_ENABLE_GPU})
